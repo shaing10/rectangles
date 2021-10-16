@@ -2,7 +2,7 @@ import numpy as np
 
 
 class RectsAndR:
-    def __init__(self, N=3, R_maximal_val=100):
+    def __init__(self, N=3, R_maximal_val=10):
         self.N = N
         self.R_maximal_val = R_maximal_val
         self.R_coords = []
@@ -19,25 +19,16 @@ class RectsAndR:
 
     def gen_rects_coords(self):
         """
-        create N arrays of [[x1,x2],[y1,y2]] values in range [-rect_size,rect_size], non overlapping
-        :return: coordinates of {r}_N - the smaller non-overlapping rectangles
+        create np.array with N arrays of [[x1,x2],[y1,y2]] - non overlapping rectangles inside R_coords
+        non overlapping is ensured by separation on x-axis (it could be y-axis as well, random choice)
+        :return: coordinates of {r}_N - smaller non-overlapping rectangles
         """
-        # generate one axis non-integers coordinates inside R boundaries
-        # ind = 1
-        # while ind < self.N
-        #     curr_rect_x = np.random.uniform(self.R_coords[0][0], self.R_coords[0][1])
-        #     curr_rect_y = np.random.uniform(self.R_coords[1][0], self.R_coords[1][1])
-        #     if
-        #     self.rects_coords.append
+        Rx1, Rx2, Ry1, Ry2 = self.R_coords[0][0], self.R_coords[0][1], self.R_coords[1][0], self.R_coords[1][1]
+        x_coords = np.sort(np.random.uniform(Rx1, Rx2, [2*self.N]))
+        y_coords = np.random.uniform(Ry1, Ry2, [2*self.N])
+        x_1, x_2 = x_coords[0::2], x_coords[1::2]
+        y_1, y_2 = y_coords[0::2], y_coords[1::2]
+        c = np.array([[x_1, y_1], [x_2, y_2]])
+        self.rects_coords = c.transpose()
+        return np.sort(self.rects_coords)
 
-        # sorted_partial_coords = np.sort(partial_coords)
-
-        print(sorted_partial_coords)
-        rects_coords = np.random.random(self.N, 2, 1)
-
-        self.rects_coords = np.sort(rects_coords)
-        return self.rects_coords
-
-
-if __name__ == '__main__':
-    0

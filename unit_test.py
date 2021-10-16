@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
 from matplotlib.patches import Rectangle
-from algo import fill_rect
+import algo
 import gen_valid_data
 
 
@@ -32,9 +32,11 @@ def is_valid(rects, R, N):
     :param R: bigger rectanle coordinates, ndarray of shape (2,2)
     :return: boolean. is the input valid or not
     """
+    rects = np.sort(rects)  # values should be sorted to match the algorithm
+    # rearrange to have an array for each coord type rather than each rectangle
     rects = np.reshape(np.ravel(rects), [4, N], 'F')
 
-    # condition (1): validate that rects are non overlapping
+    # check condition (1): validate that rects are non overlapping
     if N > 1:
         x_coords = np.concatenate((rects[0], rects[1]))
         x_candidates = isOverlap_1d(x_coords, N)  # overlapping check on x axis
@@ -51,7 +53,7 @@ def is_valid(rects, R, N):
             if is_overlap:
                 print('rectangles are overlapping')
                 return 0
-    # condition (2): validate that all rects are in R bounds
+    # check condition (2): validate that all rects are in R bounds
     bounds_max = np.max(rects, 1)  # second line of rects are the bigger x's, forth line are the bigger y's
     bounds_min = np.min(rects, 1)  # first line of rects are the smaller x's, third line are the smaller y's
     in_bounds = R[0][0] < bounds_min[0] and R[0][1] > bounds_max[1] and R[1][0] < bounds_min[2] and R[1][1] > \
@@ -64,6 +66,7 @@ def is_valid(rects, R, N):
 
 def plotting(rects, R, N, new_rects=[]):
     """
+    visualization of the rectangles - both given (R, {c_N}) and new (if supplied)
     :param rects: rectangles coordinates, ndarray of shape (N,2,2)
     :param R: bigger rectanle coordinates, ndarray of shape (2,2)
     :param N: number of smaller rectangles
@@ -74,6 +77,7 @@ def plotting(rects, R, N, new_rects=[]):
     ax = fig.add_subplot(111)
     handles = []
 
+    # plot R
     R_rect = matplotlib.patches.Rectangle((R[0][0], R[1][0]),
                                           np.abs(R[0][1] - R[0][0]), np.abs(R[1][1] - R[1][0]),
                                           color='pink',
@@ -83,6 +87,7 @@ def plotting(rects, R, N, new_rects=[]):
     ax.add_patch(R_rect)
     handles.append(matplotlib.patches.Patch(color='pink', label='R'))
 
+    # plot each given rectangle
     for ind in np.arange(N):
         x1, x2 = rects[ind][0][0], rects[ind][0][1]
         y1, y2 = rects[ind][1][0], rects[ind][1][1]
@@ -96,6 +101,7 @@ def plotting(rects, R, N, new_rects=[]):
         ax.add_patch(rect)
     handles.append(matplotlib.patches.Patch(color='green', label='given rects'))
 
+    # plot each new rectangle
     if np.array(new_rects).shape[0] > 0:
         for ind in np.arange(new_rects.shape[0]):
             x1, x2 = new_rects[ind][0][0], new_rects[ind][0][1]
@@ -115,18 +121,18 @@ def plotting(rects, R, N, new_rects=[]):
 
 
 if __name__ == '__main__':
-    n = 1
-    rects = np.sort((2 * np.random.random([n, 2, 2]) - 1))
-    R = 20 * np.sort((2 * np.random.random([2, 2]) - 1))
-    input_is_valid = is_valid(rects, R, n)
+    # generate data
+    Nun_of_rects = 5
+    a = gen_valid_data.RectsAndR(Nun_of_rects, R_maximal_val=10)  # create a class
+    R = a.gen_R_coords()  # generate R coordinates
+    rects = a.gen_rects_coords()  # generate Nun_of_rects of valid rectangles
+    # check validity
+    input_is_valid = is_valid(rects, R, Nun_of_rects)
     print(f"input_is_valid={input_is_valid}")
-    plotting(rects, R, n)
-
-    N = 3
-    x = np.array([[[3, 7], [1, 4]], [[7.1, 9], [0, 6]], [[9.50, 9.50], [-0.9, 9]]])
-    R = np.array([[-1, 10], [-1, 10]])
-    plotting(x, R, N)
-    potential_rects = fill_rect(R, x)
-    print(potential_rects.shape)
-    print(type(potential_rects))
-    plotting(x, R, N, potential_rects)
+    plotting(rects, R, Nun_of_rects)
+    # find new rectangles to cover R\{c_N}
+    potential_rects = algo.fill_rect(R, rects)
+    # merge rectangles which have 2 common vertices
+    # final_rects = algo.opt_potential_rects(potential_rects)
+    plotting(rects, R, Nun_of_rects, potential_rects)
+    # plotting(rects, R, Nun_of_rects, final_rects)
