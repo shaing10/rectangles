@@ -1,6 +1,6 @@
 # rectangles
 
-## What can you fins here
+## What can you find here
 This repository contains my answers to an algorithmic assigment.
 You can find here:
 1. code that generates R which is a large rectangle, and smaller non-overlapping, aligned-to-axis rectangles inside it - `gen_valid_data.py`.
