@@ -122,17 +122,22 @@ def plotting(rects, R, N, new_rects=[]):
 
 if __name__ == '__main__':
     # generate data
-    Nun_of_rects = 5
-    a = gen_valid_data.RectsAndR(Nun_of_rects, R_maximal_val=10)  # create a class
+    Num_of_rects = 5
+    a = gen_valid_data.RectsAndR(Num_of_rects, R_maximal_val=10)  # create a class
     R = a.gen_R_coords()  # generate R coordinates
-    rects = a.gen_rects_coords()  # generate Nun_of_rects of valid rectangles
+    rects = a.gen_rects_coords()  # generate Num_of_rects valid rectangles
+
     # check validity
-    input_is_valid = is_valid(rects, R, Nun_of_rects)
+    input_is_valid = is_valid(rects, R, Num_of_rects)
     print(f"input_is_valid={input_is_valid}")
-    plotting(rects, R, Nun_of_rects)
+    plotting(rects, R, Num_of_rects)
+
     # find new rectangles to cover R\{c_N}
     potential_rects = algo.fill_rect(R, rects)
-    # merge rectangles which have 2 common vertices
+    plotting(rects, R, Num_of_rects, potential_rects)
+
+    # ## inactivated ##
+    # same solution with lower number of rectangles - by merging rectangles which have 2 common vertices
     # final_rects = algo.opt_potential_rects(potential_rects)
-    plotting(rects, R, Nun_of_rects, potential_rects)
     # plotting(rects, R, Nun_of_rects, final_rects)
+
